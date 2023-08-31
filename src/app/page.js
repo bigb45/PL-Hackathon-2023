@@ -11,6 +11,7 @@ import { faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Chatbot from "@/components/ChatBot";
 import Container from "@/components/Container";
+import GoogleMap from "@/components/Map";
 
 export default function Home() {
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -50,6 +51,9 @@ export default function Home() {
                   isNumeric={false}
                   required={false}
                 />
+                <div className="w-full h-80">
+                  <GoogleMap />
+                </div>
               </FormSection>
               <FormSection title="HOUSE INFORMATION">
                 <FormRow title={"Room count"} hint={"Total rooms"} />
