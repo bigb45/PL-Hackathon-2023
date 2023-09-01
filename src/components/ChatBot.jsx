@@ -20,23 +20,25 @@ const Chatbot = () => {
       content: inputMessage,
     };
 
-    let startChat = await axios
-      // .post("/continue_conversation", inputMessage)
-      .get("https://catfact.ninja/fact");
+    let startChat = await axios.post(
+      "http://127.0.0.1:5000/continue_conversation",
+      inputMessage
+    );
+    // .get("https://catfact.ninja/fact");
 
-    // if (startChat.data.message != "") {
-    //   const botResponse = {
-    //     role: "bot",
-    //     content: startChat.data.fact,
-    //   };
+    if (startChat.data.message != "") {
+      const botResponse = {
+        role: "bot",
+        content: startChat.data.fact,
+      };
 
-    //   setMessages([...messages, botResponse]);
-    // }
+      setMessages([...messages, botResponse]);
+    }
 
-    const botResponse = {
-      role: "bot",
-      content: startChat.data.fact,
-    };
+    // const botResponse = {
+    //   role: "bot",
+    //   content: startChat.data.fact,
+    // };
 
     setMessages([...messages, newMessage, botResponse]);
     // response from chatbot
@@ -51,11 +53,10 @@ const Chatbot = () => {
   }, [messages]);
 
   return (
-    <div className="chatbot w-full space-y-4">
+    <div className="w-full space-y-4 chatbot">
       <div
         className="chatbot-messages overflow-y-scroll max-h-[420px] transition-all duration-500 ease-in-out"
-        ref={messagesRef}
-      >
+        ref={messagesRef}>
         {messages.map((message, index) => (
           <Message
             key={index}
@@ -67,9 +68,9 @@ const Chatbot = () => {
           />
         ))}
       </div>
-      <div className="flex justify-around items-center">
+      <div className="flex items-center justify-around">
         <input
-          className="bg-slate-200 rounded-lg w-2/3 p-2 focus:outline-none shadow-md"
+          className="w-2/3 p-2 rounded-lg shadow-md bg-slate-200 focus:outline-none"
           type="text"
           placeholder="Type your message..."
           value={inputMessage}
@@ -78,8 +79,7 @@ const Chatbot = () => {
         <Button
           onClick={handleSendMessage}
           color="default"
-          className="ml-2 py-2"
-        >
+          className="py-2 ml-2">
           Send
         </Button>
       </div>

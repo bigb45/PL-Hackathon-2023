@@ -267,7 +267,7 @@ export default function Home() {
     setRequest(myRequest);
     console.log(myRequest);
     setEstimatedPrice(128649);
-    let price = axios.post("http://127.0.0.1:5000/estimate", myRequest);
+    let price = await axios.post("http://127.0.0.1:5000/estimate", myRequest);
     setEstimatedPrice(price);
     // console.log(price);
 
