@@ -238,7 +238,7 @@ export default function Home() {
     let startChat = await axios.get(
       "http://127.0.0.1:5000/start_conversation",
       "endpoint",
-      { headers: { "Content-Type": "application/json" } }
+      { headers: { "Content-Type": "application/json" }, withCredentials: true }
     );
 
     if (startChat.data.message != "") {

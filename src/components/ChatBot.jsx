@@ -24,7 +24,12 @@ const Chatbot = () => {
     let startChat = await axios.post(
       "http://127.0.0.1:5000/continue_conversation",
       { message: inputMessage },
-      { headers: { "Content-Type": "application/json" } }
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
     );
     // .get("https://catfact.ninja/fact");
 
