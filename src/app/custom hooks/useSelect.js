@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-export const useSelect = (initial = "", setParent) => {
+export const useSelect = (initial = "") => {
   const [state, setState] = useState(initial);
   const setSelect = (newState) => {
     setState(newState);
-    setParent(newState);
   };
   return [state, setSelect];
 };

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Button } from "@nextui-org/react";
 import FormRow from "@/components/FormRow";
@@ -12,10 +12,38 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Chatbot from "@/components/ChatBot";
 import Container from "@/components/Container";
 import GoogleMap from "@/components/Map";
+import getCoords from "./api/Coords";
+import axios from "axios";
 
 export default function Home() {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [address, setAddress] = useState("");
+  const [coords, setCoords] = useState({});
+  const [roomCount, setRoomCount] = useState(0);
+  const [bedroomCount, setBedroomCount] = useState(0);
+  const [age, setAge] = useState(0);
+  const [households, setHouseholds] = useState(0);
+  const [population, setPopulation] = useState(0);
+  const [income, setIncome] = useState(0);
+  const [beachProximity, setBeachProximity] = useState("");
+  const [cityDistance, setCityDistance] = useState(0);
+  const [request, setRequest] = useState({});
+  const [chatting, setChatting] = useState(false);
+  const [estimatedPrice, setEstimatedPrice] = useState(0);
+  const isFormValid = () => {
+    const hasLocation = Object.keys(coords).length > 0;
+    const hasAddress = address.trim() !== "" && address !== null;
 
+    return (
+      (hasAddress || hasLocation) &&
+      roomCount !== 0 &&
+      roomCount !== null &&
+      bedroomCount !== 0 &&
+      bedroomCount !== null &&
+      age !== 0 &&
+      age !== null
+    );
+  };
   return (
     <main className="flex min-h-screen flex-col items-center ">
       <div className=" w-full items-center flex flex-col">
@@ -43,22 +71,37 @@ export default function Home() {
                   title={"Address"}
                   hint={"Street address"}
                   isNumeric={false}
+                  handleChange={(e) => {
+                    setAddress(e.target.value);
+                  }}
                 />
-                <FormRow title={"Zipcode"} hint={"Zipcode"} />
-                <FormRow
-                  title={"City"}
-                  hint={"City name"}
-                  isNumeric={false}
-                  required={false}
-                />
+                <p className="text-lg py-4">Or use the map</p>
                 <div className="w-full h-80">
                   <GoogleMap />
                 </div>
               </FormSection>
               <FormSection title="HOUSE INFORMATION">
-                <FormRow title={"Room count"} hint={"Total rooms"} />
-                <FormRow title={"Bedroom count"} hint={"Number of bedrooms"} />
-                <FormRow title={"House age"} hint={"Age in years"} />
+                <FormRow
+                  title={"Room count"}
+                  hint={"Total rooms"}
+                  handleChange={(e) => {
+                    setRoomCount(e.target.value);
+                  }}
+                />
+                <FormRow
+                  title={"Bedroom count"}
+                  hint={"Number of bedrooms"}
+                  handleChange={(e) => {
+                    setBedroomCount(e.target.value);
+                  }}
+                />
+                <FormRow
+                  title={"House age"}
+                  hint={"Age in years"}
+                  handleChange={(e) => {
+                    setAge(e.target.value);
+                  }}
+                />
               </FormSection>
 
               {
@@ -74,27 +117,44 @@ export default function Home() {
                       title={"Population"}
                       hint={"Neighborhood population"}
                       required={false}
+                      handleChange={(e) => {
+                        setPopulation(e.target.value);
+                      }}
                     />
                     <FormRow
                       title={"Household count"}
                       hint={"# of households"}
                       required={false}
+                      handleChange={(e) => {
+                        setHouseholds(e.target.value);
+                      }}
                     />
 
                     <FormRow
                       title={"Average income"}
                       hint={"In thousnads of Dollars"}
                       required={false}
+                      handleChange={(e) => {
+                        setIncome(e.target.value);
+                      }}
                     />
                   </FormSection>
                   <FormSection>
                     <FormRowBlank title="Proximity to the beach">
-                      <ProximitySelector />
+                      <ProximitySelector
+                        handleChange={(selection) => {
+                          setBeachProximity(selection);
+                        }}
+                      />
                     </FormRowBlank>
 
                     <FormRow
                       title="Distance to city"
                       hint="Nearest major city in miles"
+                      required={false}
+                      handleChange={(e) => {
+                        setCityDistance(e.target.value);
+                      }}
                     />
                   </FormSection>
                 </div>
@@ -103,7 +163,6 @@ export default function Home() {
                 className=" text-center "
                 onClick={() => {
                   setShowAdvanced(!showAdvanced);
-                  console.log(showAdvanced);
                 }}
               >
                 {showAdvanced ? (
@@ -127,17 +186,96 @@ export default function Home() {
             </div>
 
             <div className="w-full flex justify-center">
-              <Button>Estimate Price</Button>
+              <Button
+                onClick={() => {
+                  if (isFormValid()) {
+                    getCoordinatesFromAddress();
+                  } else {
+                    // Display a message if the form is not valid
+                    alert("Please fill out all required fields.");
+                  }
+                }}
+              >
+                Estimate Price
+              </Button>
             </div>
           </Container>
 
           <Container title="Or speak to our chatbot for a more personalized experience">
-            <div className="items-center justify-end my-4 py-2 px-5 flex flex-col border border-gray rounded-lg w-full h-[500px] overflow-scroll-y">
-              <Chatbot />
+            <div
+              className={`items-center ${
+                chatting
+                  ? "justify-end max-h-[500px] h-[500px] transition-all duration-300 ease-in-out"
+                  : "justify-center max-h-[100px]"
+              } my-4 py-2 px-5 flex flex-col border border-gray rounded-lg w-full  overflow-scroll-y`}
+            >
+              {chatting ? (
+                <Chatbot />
+              ) : (
+                <a
+                  className="text-6xl font-bold text-gray w-full text-center align-text-center"
+                  onClick={() => {
+                    setChatting(!chatting);
+                    initChatbot();
+                  }}
+                >
+                  Start Chatting
+                </a>
+              )}
+            </div>
+          </Container>
+          <Container title={"Your house's estimated value is:"}>
+            <div className="flex flex-col items-center space-y-4">
+              <p className="text-4xl font-bold text-primary p-4">
+                ${estimatedPrice}
+              </p>
+              <p className="text-lg text-primary">
+                This is an estimate based on the information you provided.
+              </p>
             </div>
           </Container>
         </div>
       </div>
     </main>
   );
+
+  async function initChatbot() {
+    let startChat = await axios.get("/start_conversation");
+
+    if (startChat.data.message != "") {
+      const botResponse = {
+        role: "bot",
+        content: startChat.data.message,
+      };
+    }
+  }
+
+  async function getCoordinatesFromAddress() {
+    let myRequest = {};
+    setAddress(address.replace(" ", "+"));
+    if (address) {
+      var houseCoords = await getCoords(address);
+      setCoords(houseCoords);
+    }
+
+    myRequest = {
+      longitude: coords.lat,
+      latitude: coords.lng,
+      housing_median_age: age,
+      total_rooms: roomCount,
+      total_bedrooms: bedroomCount,
+      population: population,
+      households: households,
+      median_income: income,
+      ocean_proximity: beachProximity,
+    };
+    setRequest(myRequest);
+    console.log(myRequest);
+    setEstimatedPrice(128649);
+    // let price = axios.post("/estimate", myRequest)
+    // setEstimatedPrice(price)
+    // console.log(price);
+
+    // setPin(coords);
+  }
 }

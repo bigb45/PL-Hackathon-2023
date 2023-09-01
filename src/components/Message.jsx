@@ -4,13 +4,13 @@ const Message = ({ role, content }) => {
   return (
     <div
       className={`message flex flex-col ${
-        isUserMessage ? "items-end" : "items-start"
-      } bg-slate-100 rounded-lg p-2 m-4 hover:shadow-lg`}
+        isUserMessage ? "items-end ml-80" : "items-start mr-80"
+      } bg-slate-100 rounded-lg p-2 m-4 hover:shadow-lg transition`}
     >
       <p
         className={`${
           isUserMessage ? "text-blue-600" : "text-zinc-400"
-        } text-sm mb-1`}
+        } text-sm mb-1 first-letter:uppercase`}
       >
         {role}
       </p>

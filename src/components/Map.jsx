@@ -1,7 +1,7 @@
 import { loadScript } from "./utils/MapsUtil";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 
-function GoogleMap() {
+function GoogleMap(props) {
   const mapRef = useRef(null);
   var marker = null;
   useEffect(() => {
@@ -16,7 +16,6 @@ function GoogleMap() {
         map.addListener("click", (e) => {
           var pos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
           addMarker(e.latLng, map);
-          console.log(pos);
         });
 
         // You can add markers or additional map functionality here.
@@ -35,7 +34,7 @@ function GoogleMap() {
     });
   }
 
-  return <div ref={mapRef} className="w-full h-80" />;
+  return <div ref={mapRef} className="w-full h-80 rounded-lg" />;
 }
 
 export default GoogleMap;

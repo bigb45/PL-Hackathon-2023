@@ -14,7 +14,10 @@ function FormRow(props) {
         allowDecimals={false}
         min={0}
         onChange={(e) => {
-          validateInput(e);
+          props.handleChange(e);
+          if (props.required) {
+            validateInput(e);
+          }
         }}
         placeholder={props.hint}
         className="p-2 focus: outline-none border border-b border-zinc-500 rounded-lg w-1/2"
@@ -29,16 +32,14 @@ FormRow.defaultProps = {
 };
 
 function validateInput(e) {
-  if (e.target.value.includes(".")) {
-    e.target.value = Math.floor(e.target.value);
-  }
-  if (e.target.value < 0) {
+  if (e.target.value < 0 || e.target.value == "") {
     e.target.style.borderColor = "red";
+    return false;
   } else {
     e.target.style.borderColor = "black";
+    return true;
   }
   // update the state with the latest value
-  // props.handleChange(e);
 }
 
 export default FormRow;

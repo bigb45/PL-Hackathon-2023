@@ -1,26 +1,45 @@
 import React, { useState, useEffect } from "react";
 import Message from "./Message";
-import { Button, Textarea } from "@nextui-org/react";
-
+import { Button } from "@nextui-org/react";
+import axios from "axios";
 const Chatbot = () => {
-  const [messages, setMessages] = useState([]);
+  const greeting = {
+    role: "bot",
+    content: "How can I assist you with real estate pricing today?",
+  };
+  const [messages, setMessages] = useState([greeting]);
   const [inputMessage, setInputMessage] = useState("");
   const messagesRef = React.useRef(null);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputMessage.trim() === "") return;
     // user prompt
+
     const newMessage = {
       role: "user",
       content: inputMessage,
     };
-    // response from chatbot
+
+    let startChat = await axios
+      // .post("/continue_conversation", inputMessage)
+      .get("https://catfact.ninja/fact");
+
+    // if (startChat.data.message != "") {
+    //   const botResponse = {
+    //     role: "bot",
+    //     content: startChat.data.fact,
+    //   };
+
+    //   setMessages([...messages, botResponse]);
+    // }
+
     const botResponse = {
       role: "bot",
-      content: "You asked me to say: " + inputMessage + ", is this good?",
+      content: startChat.data.fact,
     };
 
     setMessages([...messages, newMessage, botResponse]);
+    // response from chatbot
 
     setInputMessage("");
   };
