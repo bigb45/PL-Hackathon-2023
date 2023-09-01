@@ -37,11 +37,11 @@ export default function Home() {
     return (
       (hasAddress || hasLocation) &&
       roomCount !== 0 &&
-      roomCount !== null &&
+      roomCount !== "" &&
       bedroomCount !== 0 &&
-      bedroomCount !== null &&
+      bedroomCount !== "" &&
       age !== 0 &&
-      age !== null
+      age !== ""
     );
   };
   return (
