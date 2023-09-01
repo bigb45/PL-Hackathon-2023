@@ -30,19 +30,16 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-
-
 .width-transition {
   transition: width 0.3s ease-in-out;
 }
-
 
 *::-webkit-scrollbar {
   width: 17px;
 }
 
 *::-webkit-scrollbar-track {
-  background-color: var(--tertiary);;
+  background-color: var(--tertiary);
   border-radius: 10px;
 }
 
@@ -51,4 +48,3 @@ body {
   border-radius: 14px;
   border: 2px solid var(--primary);
 }
-

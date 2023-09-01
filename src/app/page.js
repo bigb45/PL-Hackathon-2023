@@ -235,7 +235,11 @@ export default function Home() {
   );
 
   async function initChatbot() {
-    let startChat = await axios.get("http://127.0.0.1:5000/start_conversation");
+    let startChat = await axios.get(
+      "http://127.0.0.1:5000/start_conversation",
+      "endpoint",
+      { headers: { "Content-Type": "application/json" } }
+    );
 
     if (startChat.data.message != "") {
       const botResponse = {
@@ -254,23 +258,18 @@ export default function Home() {
     }
 
     myRequest = {
-      longitude: coords.lat,
-      latitude: coords.lng,
-      housing_median_age: age,
-      total_rooms: roomCount,
-      total_bedrooms: bedroomCount,
-      population: population,
-      households: households,
-      median_income: income,
+      longitude: Number(coords.lat),
+      latitude: Number(coords.lng),
+      housing_median_age: Number(age),
+      total_rooms: Number(roomCount),
+      total_bedrooms: Number(bedroomCount),
+      population: Number(population),
+      households: Number(households),
+      median_income: Number(income),
       ocean_proximity: beachProximity,
     };
     setRequest(myRequest);
-    console.log(myRequest);
-    setEstimatedPrice(128649);
-    let price = await axios.post("http://127.0.0.1:5000/estimate", myRequest);
-    setEstimatedPrice(price);
-    // console.log(price);
-
-    // setPin(coords);
+    let price = await axios.post("http://127.0.0.1:5000/predict", myRequest);
+    setEstimatedPrice(parseInt(price.data.prediction));
   }
 }
