@@ -45,25 +45,25 @@ export default function Home() {
     );
   };
   return (
-    <main className="flex min-h-screen flex-col items-center ">
-      <div className=" w-full items-center flex flex-col">
-        <div className="bg-primary w-full h-fit flex space-x-24 justify-center text-onPrimary text-lg items-center p-4">
+    <main className="flex flex-col items-center min-h-screen ">
+      <div className="flex flex-col items-center w-full ">
+        <div className="flex items-center justify-center w-full p-4 space-x-24 text-lg bg-primary h-fit text-onPrimary">
           <a href="/about">About</a>
           <a href="/home">Home</a>
           <a href="/contact">Contact</a>
         </div>
 
-        <div className="flex flex-col items-center space-y-12 bg-background w-full py-24">
+        <div className="flex flex-col items-center w-full py-24 space-y-12 bg-background">
           <div className="flex flex-col items-center space-y-6">
-            <p className=" text-5xl font-bold">Real Estate Price Estimator</p>
-            <p className="text-primary text-2xl ">
+            <p className="text-5xl font-bold ">Real Estate Price Estimator</p>
+            <p className="text-2xl text-primary ">
               Get an estimated price on your dream home.
             </p>
           </div>
           <Button>Get Started</Button>
         </div>
 
-        <div className="flex-col space-y-10 p-10 w-full items-center flex justify-center bg-onPrimary">
+        <div className="flex flex-col items-center justify-center w-full p-10 space-y-10 bg-onPrimary">
           <Container title={"Fill out the details"}>
             <div className="mb-4 ">
               <FormSection title="LOCATION">
@@ -75,7 +75,7 @@ export default function Home() {
                     setAddress(e.target.value);
                   }}
                 />
-                <p className="text-lg py-4">Or use the map</p>
+                <p className="py-4 text-lg">Or use the map</p>
                 <div className="w-full h-80">
                   <GoogleMap />
                 </div>
@@ -110,8 +110,7 @@ export default function Home() {
                     showAdvanced
                       ? "max-h-[1000px] overflow-hidden"
                       : "max-h-[0px] overflow-hidden "
-                  }`}
-                >
+                  }`}>
                   <FormSection title="NEIGHBOURHOOD INFORMATION">
                     <FormRow
                       title={"Population"}
@@ -160,11 +159,10 @@ export default function Home() {
                 </div>
               }
               <div
-                className=" text-center "
+                className="text-center "
                 onClick={() => {
                   setShowAdvanced(!showAdvanced);
-                }}
-              >
+                }}>
                 {showAdvanced ? (
                   <div>
                     <p className="text-zinc-500">Hide</p>
@@ -185,7 +183,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="w-full flex justify-center">
+            <div className="flex justify-center w-full">
               <Button
                 onClick={() => {
                   if (isFormValid()) {
@@ -194,8 +192,7 @@ export default function Home() {
                     // Display a message if the form is not valid
                     alert("Please fill out all required fields.");
                   }
-                }}
-              >
+                }}>
                 Estimate Price
               </Button>
             </div>
@@ -207,18 +204,16 @@ export default function Home() {
                 chatting
                   ? "justify-end max-h-[500px] h-[500px] transition-all duration-300 ease-in-out"
                   : "justify-center max-h-[100px]"
-              } my-4 py-2 px-5 flex flex-col border border-gray rounded-lg w-full  overflow-scroll-y`}
-            >
+              } my-4 py-2 px-5 flex flex-col border border-gray rounded-lg w-full  overflow-scroll-y`}>
               {chatting ? (
                 <Chatbot />
               ) : (
                 <a
-                  className="text-6xl font-bold text-gray w-full text-center align-text-center"
+                  className="w-full text-6xl font-bold text-center text-gray align-text-center"
                   onClick={() => {
                     setChatting(!chatting);
                     initChatbot();
-                  }}
-                >
+                  }}>
                   Start Chatting
                 </a>
               )}
@@ -226,7 +221,7 @@ export default function Home() {
           </Container>
           <Container title={"Your house's estimated value is:"}>
             <div className="flex flex-col items-center space-y-4">
-              <p className="text-4xl font-bold text-primary p-4">
+              <p className="p-4 text-4xl font-bold text-primary">
                 ${estimatedPrice}
               </p>
               <p className="text-lg text-primary">
@@ -240,7 +235,7 @@ export default function Home() {
   );
 
   async function initChatbot() {
-    let startChat = await axios.get("/start_conversation");
+    let startChat = await axios.get("http://127.0.0.1:5000/start_conversation");
 
     if (startChat.data.message != "") {
       const botResponse = {
@@ -272,8 +267,8 @@ export default function Home() {
     setRequest(myRequest);
     console.log(myRequest);
     setEstimatedPrice(128649);
-    // let price = axios.post("/estimate", myRequest)
-    // setEstimatedPrice(price)
+    let price = axios.post("http://127.0.0.1:5000/estimate", myRequest);
+    setEstimatedPrice(price);
     // console.log(price);
 
     // setPin(coords);
