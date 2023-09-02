@@ -20,7 +20,7 @@ function FormRow(props) {
           }
         }}
         placeholder={props.hint}
-        className="p-2 focus: outline-none border border-b border-zinc-500 rounded-lg w-1/2"
+        className="p-2 focus: outline-none border-b border-zinc-500  w-1/2"
       />
     </div>
   );

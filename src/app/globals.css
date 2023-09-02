@@ -48,3 +48,8 @@ body {
   border-radius: 14px;
   border: 2px solid var(--primary);
 }
+
+.sticky{
+
+  z-index: 100;
+}

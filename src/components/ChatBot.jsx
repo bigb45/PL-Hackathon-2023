@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Message from "./Message";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
-const Chatbot = () => {
+const Chatbot = ({ id }) => {
+  console.log(id);
   const greeting = {
     role: "bot",
     content: "How can I assist you with real estate pricing today?",
@@ -23,7 +24,7 @@ const Chatbot = () => {
     console.table({ message: inputMessage });
     let startChat = await axios.post(
       "http://127.0.0.1:5000/continue_conversation",
-      { message: inputMessage },
+      { message: inputMessage, id: id },
       {
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +64,8 @@ const Chatbot = () => {
     <div className="w-full space-y-4 chatbot">
       <div
         className="chatbot-messages overflow-y-scroll max-h-[420px] transition-all duration-500 ease-in-out"
-        ref={messagesRef}>
+        ref={messagesRef}
+      >
         {messages.map((message, index) => (
           <Message
             key={index}
@@ -86,7 +88,8 @@ const Chatbot = () => {
         <Button
           onClick={handleSendMessage}
           color="default"
-          className="py-2 ml-2">
+          className="py-2 ml-2"
+        >
           Send
         </Button>
       </div>

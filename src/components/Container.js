@@ -4,8 +4,8 @@ import React from "react";
 
 function Container({ title, children }) {
   return (
-    <div className="w-2/5 h-auto drop-shadow-lg justify-start flex flex-col p-10 bg-onPrimary border border-borderColor rounded-[4px] transition-all">
-      <p className="text-4xl font-bold text-secondary pb">{title} </p>
+    <div className="w-2/5 h-auto drop-shadow-lg duration-800 justify-start flex flex-col p-10 bg-onPrimary border border-borderColor rounded-[4px] transition">
+      <p className="text-4xl font-bold text-secondary ">{title} </p>
       {children}
     </div>
   );

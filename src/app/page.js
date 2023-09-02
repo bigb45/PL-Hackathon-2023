@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useRef } from "react";
 import { useState } from "react";
 import { Button } from "@nextui-org/react";
 import FormRow from "@/components/FormRow";
@@ -14,6 +14,7 @@ import Container from "@/components/Container";
 import GoogleMap from "@/components/Map";
 import getCoords from "./api/Coords";
 import axios from "axios";
+import { render } from "react-dom";
 
 export default function Home() {
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -30,6 +31,10 @@ export default function Home() {
   const [request, setRequest] = useState({});
   const [chatting, setChatting] = useState(false);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [hasEstimate, setHasEstimate] = useState(false);
+  let id = null;
+  const botResponseRef = useRef(null);
   const isFormValid = () => {
     const hasLocation = Object.keys(coords).length > 0;
     const hasAddress = address.trim() !== "" && address !== null;
@@ -45,25 +50,43 @@ export default function Home() {
     );
   };
   return (
-    <main className="flex flex-col items-center min-h-screen ">
+    <main
+      className="flex flex-col items-center min-h-screen bg-background "
+      id="home-section"
+    >
       <div className="flex flex-col items-center w-full ">
-        <div className="flex items-center justify-center w-full p-4 space-x-24 text-lg bg-primary h-fit text-onPrimary">
+        <div className=" sticky top-0 flex items-center justify-center w-full p-4 space-x-24 text-lg bg-primary h-fit text-onPrimary">
           <a href="/about">About</a>
-          <a href="/home">Home</a>
+          <a href="#home-section">Home</a>
           <a href="/contact">Contact</a>
         </div>
 
-        <div className="flex flex-col items-center w-full py-24 space-y-12 bg-background">
+        <div className="flex flex-col items-center w-full py-80 space-y-12 bg-background">
           <div className="flex flex-col items-center space-y-6">
             <p className="text-5xl font-bold ">Real Estate Price Estimator</p>
             <p className="text-2xl text-primary ">
-              Get an estimated price on your dream home.
+              Get a realistic price estimate on your real estate.
             </p>
           </div>
-          <Button>Get Started</Button>
+          <button
+            className="px-16 py-6  text-4xl font-bold text-white transition duration-500 ease-in-out transform bg-primary rounded-full hover:bg-primaryDark hover:scale-110 hover:shadow-2xl"
+            onClick={() => {
+              const section = document.getElementById("#section-1");
+              if (section) {
+                section.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+          >
+            Get Started
+          </button>
         </div>
 
-        <div className="flex flex-col items-center justify-center w-full p-10 space-y-10 bg-onPrimary">
+        <div
+          className={`flex flex-col items-center justify-center w-full overflow-scroll space-y-10 bg-onPrimary            
+                max-h-[4000px] p-10              
+          `}
+          id="#section-1"
+        >
           <Container title={"Fill out the details"}>
             <div className="mb-4 ">
               <FormSection title="LOCATION">
@@ -109,8 +132,9 @@ export default function Home() {
                   className={`transition-all duration-700 ${
                     showAdvanced
                       ? "max-h-[1000px] overflow-hidden"
-                      : "max-h-[0px] overflow-hidden "
-                  }`}>
+                      : "max-h-[0px] overflow-hidden"
+                  }`}
+                >
                   <FormSection title="NEIGHBOURHOOD INFORMATION">
                     <FormRow
                       title={"Population"}
@@ -162,7 +186,8 @@ export default function Home() {
                 className="text-center "
                 onClick={() => {
                   setShowAdvanced(!showAdvanced);
-                }}>
+                }}
+              >
                 {showAdvanced ? (
                   <div>
                     <p className="text-zinc-500">Hide</p>
@@ -188,39 +213,25 @@ export default function Home() {
                 onClick={() => {
                   if (isFormValid()) {
                     getCoordinatesFromAddress();
+                    setHasEstimate(true);
                   } else {
                     // Display a message if the form is not valid
                     alert("Please fill out all required fields.");
                   }
-                }}>
+                }}
+              >
                 Estimate Price
               </Button>
             </div>
-          </Container>
 
-          <Container title="Or speak to our chatbot for a more personalized experience">
             <div
-              className={`items-center ${
-                chatting
-                  ? "justify-end max-h-[500px] h-[500px] transition-all duration-300 ease-in-out"
-                  : "justify-center max-h-[100px]"
-              } my-4 py-2 px-5 flex flex-col border border-gray rounded-lg w-full  overflow-scroll-y`}>
-              {chatting ? (
-                <Chatbot />
-              ) : (
-                <a
-                  className="w-full text-6xl font-bold text-center text-gray align-text-center"
-                  onClick={() => {
-                    setChatting(!chatting);
-                    initChatbot();
-                  }}>
-                  Start Chatting
-                </a>
-              )}
-            </div>
-          </Container>
-          <Container title={"Your house's estimated value is:"}>
-            <div className="flex flex-col items-center space-y-4">
+              className={`flex flex-col items-center space-y-4 pt-10 overflow-hidden ${
+                hasEstimate ? "max-h-96 duration-700" : "max-h-0"
+              }`}
+            >
+              <p className="text-4xl font-bold text-secondary ">
+                Your house&apos;s estimated value is:
+              </p>
               <p className="p-4 text-4xl font-bold text-primary">
                 ${estimatedPrice}
               </p>
@@ -229,23 +240,64 @@ export default function Home() {
               </p>
             </div>
           </Container>
+
+          <div
+            className={`flex flex-col items-center justify-center w-full space-y-10 bg-onPrimary p-10 py-[500px]`}
+          >
+            <p className="text-4xl font-bold text-secondary">
+              Or talk to our chatbot for a tailored experience!
+            </p>
+            <Container>
+              <div
+                className={`items-center ${
+                  chatting
+                    ? "justify-end max-h-[500px] h-[500px] transition-all duration-700 ease-in-out"
+                    : "justify-center max-h-[200px]"
+                } my-4 py-2 px-5 flex flex-col rounded-lg w-full  overflow-scroll-y`}
+              >
+                {chatting ? (
+                  <Chatbot id={id} />
+                ) : (
+                  <button
+                    className="px-16 py-6  text-4xl font-bold text-white transition duration-500 ease-in-out transform bg-primary rounded-full hover:bg-primaryDark hover:scale-110 hover:shadow-2xl"
+                    onClick={async () => {
+                      await initChatbot();
+                      setChatting(!chatting);
+                    }}
+                  >
+                    Start chatting
+                  </button>
+                )}
+              </div>
+            </Container>
+          </div>
         </div>
       </div>
     </main>
   );
 
   async function initChatbot() {
-    let startChat = await axios.get(
-      "http://127.0.0.1:5000/start_conversation",
-      "endpoint",
-      { headers: { "Content-Type": "application/json" }, withCredentials: true }
-    );
+    try {
+      let startChat = await axios.get(
+        "http://127.0.0.1:5000/start_conversation",
+        "endpoint",
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
 
-    if (startChat.data.message != "") {
-      const botResponse = {
-        role: "bot",
-        content: startChat.data.message,
-      };
+      id = "startChat.data.id;";
+      console.log(id);
+
+      if (startChat.data.message != "") {
+        const botResponse = {
+          role: "bot",
+          content: startChat.data.message,
+        };
+      }
+    } catch (error) {
+      console.error("Error during Axios request:", error);
     }
   }
 
